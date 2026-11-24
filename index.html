@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>釜山媽咪姐妹行 🍓 口袋名單</title>
+<style>
+:root{
+  /* 聖誕市集配色：夜晚松綠背景＋奶油色攤位卡片＋聖誕紅／金 */
+  --bg:#14262b; --card:#fffaf0; --pink:#c8102e; --pink-soft:#fde6df; --peach:#fde0c9;
+  --mint:#e1efdc; --sky:#d3e8d8; --lav:#f6d6d6; --yellow:#fbecb8;
+  --text:#4a2c2a; --muted:#8a6f66; --line:#ecd9c6;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding-bottom:60px}
+header{text-align:center;padding:26px 16px 16px;background:linear-gradient(180deg,var(--pink-soft),var(--bg))}
+header .big{font-size:42px;letter-spacing:6px}
+header h1{font-size:23px;margin:6px 0 4px}
+header p{color:var(--muted);font-size:14px}
+nav{position:sticky;top:0;z-index:10;background:var(--bg);padding:10px 12px;display:flex;gap:8px;overflow-x:auto;border-bottom:1px solid var(--line);scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav button{flex:none;border:none;background:var(--card);color:var(--text);padding:8px 14px;border-radius:999px;font-size:14px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.08);white-space:nowrap}
+nav button.on{background:var(--pink);color:#fff;font-weight:700}
+nav .sep{flex:none;width:1px;background:var(--line);margin:4px 2px}
+main{max-width:720px;margin:0 auto;padding:14px}
+.page{display:none}
+.page.on{display:block}
+.dayhead{border-radius:18px;padding:14px 16px;margin-bottom:12px}
+.dayhead h2{font-size:20px}
+.dayhead p{font-size:13px;color:var(--muted)}
+.sub{font-size:15px;font-weight:700;margin:16px 4px 8px}
+.card{background:var(--card);border-radius:16px;padding:12px 14px;margin-bottom:10px;box-shadow:0 2px 8px rgba(255,143,171,.15);display:flex;gap:12px;align-items:flex-start;transition:opacity .2s}
+.card.done{opacity:.5}
+.card.done .name{text-decoration:line-through}
+.emo{font-size:28px;flex:none;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--pink-soft)}
+.body{flex:1;min-width:0}
+.name{font-weight:700;font-size:16px}
+.desc{font-size:13px;color:var(--muted);margin-top:2px}
+.tags{margin-top:6px;display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:12px;padding:2px 9px;border-radius:999px;background:var(--yellow)}
+.tag.eat{background:var(--peach)} .tag.buy{background:var(--lav)} .tag.day{background:var(--sky)}
+.actions{display:flex;gap:8px;margin-top:9px;align-items:center}
+.map{display:inline-block;text-decoration:none;background:var(--mint);color:inherit;border-radius:999px;padding:5px 12px;font-size:13px;font-weight:600}
+.map:active{transform:scale(.96)}
+.chk{margin-left:auto;font-size:12px;color:var(--muted);display:flex;gap:4px;align-items:center;cursor:pointer}
+.chk input{accent-color:var(--pink);width:18px;height:18px}
+.top{background:var(--card);border-radius:18px;padding:14px 16px;margin-bottom:6px;border:2px dashed var(--pink)}
+.top h2{font-size:18px;margin-bottom:6px}
+.top ul{list-style:none}
+.top li{padding:6px 0;border-bottom:1px dotted var(--line);font-size:14px}
+.top li:last-child{border:none}
+.top small{color:var(--muted)}
+.tip{background:var(--yellow);border-radius:14px;padding:10px 14px;font-size:13px;margin:8px 0}
+.empty{text-align:center;color:var(--muted);padding:24px 10px;font-size:14px;background:var(--card);border-radius:16px}
+details.orig{background:var(--card);border-radius:14px;padding:10px 14px;margin-top:14px;font-size:13px}
+details.orig summary{cursor:pointer;font-weight:700}
+details.orig li{margin-left:18px}
+
+/* 排行程 */
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.btn{border:none;border-radius:999px;padding:9px 16px;font-size:14px;font-weight:700;cursor:pointer;background:var(--pink);color:#fff}
+.btn.alt{background:var(--card);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.col{margin-bottom:16px;border-radius:18px;padding:10px;background:var(--card);box-shadow:0 2px 8px rgba(255,143,171,.12)}
+.colhead{font-weight:800;font-size:15px;padding:4px 6px 8px;display:flex;justify-content:space-between;align-items:center}
+.colhead .cnt{font-size:12px;font-weight:600;color:var(--muted)}
+.list{min-height:56px;border:2px dashed var(--line);border-radius:14px;padding:6px}
+.list:empty::before{content:"把店家拖到這裡 ✨";display:block;text-align:center;color:var(--muted);font-size:13px;padding:14px 0}
+.pi{display:flex;align-items:center;gap:8px;background:var(--pink-soft);border-radius:12px;padding:8px 10px;margin:6px 0;font-size:14px;touch-action:manipulation}
+.pi .handle{cursor:grab;font-size:20px;padding:4px 6px;touch-action:none;color:var(--muted);user-select:none}
+.pi .pe{font-size:20px}
+.pi .pn{flex:1;min-width:0;font-weight:600;line-height:1.3}
+.pi select{border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:8px;font-size:12px;padding:4px 2px;max-width:84px}
+.sortable-ghost{opacity:.35}
+.sortable-chosen{box-shadow:0 4px 14px rgba(255,143,171,.5)}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
+
+/* ===== 聖誕市集風格覆蓋 ===== */
+body{background:radial-gradient(ellipse at top,#1f4a45 0%,#14262b 55%,#0d1a1e 100%) fixed;color:#fdf3e3}
+#snow{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
+header{position:relative;background:none;padding-top:46px;color:#fdf3e3}
+header h1{font-family:"Noto Serif TC","Songti TC",serif;color:#ffd98a;text-shadow:0 2px 10px rgba(255,200,100,.45);letter-spacing:1px}
+header p{color:#d9cbb2}
+header .big{filter:drop-shadow(0 2px 6px rgba(0,0,0,.4))}
+.lights{position:absolute;top:0;left:0;right:0;height:34px;list-style:none;display:flex;justify-content:space-around;overflow:hidden;padding:0}
+.lights::before{content:"";position:absolute;left:-5%;right:-5%;top:2px;height:2px;background:#0a1417;border-radius:50%}
+.lights li{position:relative;margin-top:6px;width:11px;height:17px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;animation:twinkle 2s ease-in-out infinite}
+.lights li:nth-child(4n+1){background:#ff4d5e;box-shadow:0 0 12px 3px rgba(255,77,94,.7)}
+.lights li:nth-child(4n+2){background:#ffd24d;box-shadow:0 0 12px 3px rgba(255,210,77,.7)}
+.lights li:nth-child(4n+3){background:#5ddc8a;box-shadow:0 0 12px 3px rgba(93,220,138,.65)}
+.lights li:nth-child(4n){background:#6cc4ff;box-shadow:0 0 12px 3px rgba(108,196,255,.65)}
+@keyframes twinkle{0%,100%{opacity:1}50%{opacity:.35}}
+nav{background:rgba(20,38,43,.94);border-bottom:1px solid #3b5a55;backdrop-filter:blur(6px)}
+nav button{background:#fffaf0;color:var(--text)}
+nav button.on{background:var(--pink);color:#fff;box-shadow:0 0 0 2px #ffd98a}
+.dayhead,.card,.top,.tip,.empty,.col,details.orig{color:var(--text)}
+.dayhead{border:2px solid rgba(255,217,138,.55);box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.dayhead h2{font-family:"Noto Serif TC","Songti TC",serif}
+.sub{color:#ffd98a;font-family:"Noto Serif TC","Songti TC",serif}
+/* 攤位遮雨棚（紅白條紋） */
+.card{position:relative;overflow:hidden;padding-top:19px;border:1px solid #ecd9c6;box-shadow:0 4px 14px rgba(0,0,0,.28),0 0 0 1px rgba(255,217,138,.25)}
+.card::before{content:"";position:absolute;left:0;right:0;top:0;height:8px;background:repeating-linear-gradient(90deg,#c8102e 0 14px,#fffaf0 14px 28px)}
+.card::after{content:"";position:absolute;left:0;right:0;top:8px;height:4px;background:radial-gradient(circle at 7px 0,#c8102e 6px,transparent 7px) 0 0/14px 4px repeat-x;opacity:.9}
+.emo{background:radial-gradient(circle,#fff 0%,#fde6df 100%);box-shadow:inset 0 0 0 2px #f0c9bd}
+.map{background:#d6ebd2;border:1px solid #b6d6b0}
+.top{border:2px dashed #c8102e}
+.btn.alt{background:#fffaf0;color:var(--text)}
+.col{border:1px solid #3b5a55}
+.pi{background:#fde6df}
+footer{color:#cdbfa8}
+.sbox input{width:100%;border:2px solid #ffd98a;border-radius:999px;padding:11px 16px;font-size:16px;background:#fffaf0;color:var(--text);outline:none}
+.sbox input:focus{box-shadow:0 0 0 3px rgba(255,217,138,.35)}
+.chiplabel{font-size:13px;color:#d9cbb2;margin:12px 4px 0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.chipt{border:1px solid #3b5a55;background:rgba(255,250,240,.08);color:#fdf3e3;border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer}
+.chipt small{opacity:.7;margin-left:4px}
+.chipt.on{background:#c8102e;border-color:#ffd98a;color:#fff;font-weight:700}
+.rescount{font-size:13px;color:#d9cbb2;margin:10px 4px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.btn.sm{padding:5px 12px;font-size:12px}
+main{padding-top:18px;max-width:1000px}
+/* 卡片改成「左圖右文」＋雙欄網格 */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:12px;margin-bottom:6px}
+.cards .card{margin-bottom:0}
+.card{gap:12px;padding:19px 12px 12px;align-items:stretch}
+.thumb{position:relative;flex:none;width:92px;height:92px;border-radius:10px;overflow:hidden;background:linear-gradient(135deg,#fde6df,#ffd9a8);display:flex;align-items:center;justify-content:center;font-size:42px;align-self:flex-start}
+.thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.thumb .no{position:absolute;left:0;top:0;z-index:1;background:#1b1b1b;color:#fff;font-size:11px;font-weight:700;padding:2px 7px;border-radius:0 0 8px 0;letter-spacing:.5px}
+.kr{font-size:12px;color:var(--muted);font-weight:400;margin-left:6px}
+.meta{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin-top:6px;font-size:13px;font-weight:600}
+.closed{background:#1b1b1b;color:#fff;border-radius:4px;padding:1px 7px;font-size:12px;font-weight:700}
+.closed.warn{background:#c8102e}
+.area{margin-left:auto;font-weight:700;font-size:13px}
+.tag.src{background:#ffe3a3}
+.intro{background:#fffaf0;color:var(--text);border:2px dashed #ffd98a;border-radius:16px;padding:12px 16px;margin-bottom:14px}
+.intro b{font-size:15px}
+.intro p{font-size:14px;line-height:1.85;margin-top:4px}
+@media (max-width:380px){.thumb{width:76px;height:76px;font-size:34px}}
+@media (prefers-reduced-motion: reduce){.lights li{animation:none}}
+</style>
+</head>
+<body>
+<canvas id="snow"></canvas>
+<nav id="nav"></nav>
+<main id="app"></main>
+<footer>🌸 玩得開心、吃得飽飽、平安回家 🌸<br>在地美食參考 be_simple_m 推薦；營業時間與公休日可能變動，前往前請先確認；排的行程與「去過了」只存在這支手機，要分享請用「複製分享連結」</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+<script>
+const gm = q => "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q);
+
+/* ========== 資料：t: g=景點/購物, f=美食；day 為預設天數 ========== */
+const items = [
+ // Day 1
+ {day:1,t:"g",e:"🏨",n:"海雲台華美達安可酒店",d:"Day 1–2 住宿點，位於海雲台站旁",q:"Ramada Encore by Wyndham Busan Haeundae"},
+ {day:1,t:"g",e:"🏖️",n:"海雲台主街＆海水浴場",d:"逛街、Olive Young、海邊散步",q:"Haeundae Beach 해운대해수욕장",tags:["必買：Olive Young 保養彩妝"]},
+ {day:1,t:"g",e:"🍢",n:"海雲台傳統市場",d:"小吃、魚板、糖餅、水果攤買韓國草莓",q:"해운대전통시장",tags:["必吃：魚板","必買：草莓"]},
+ {day:1,t:"f",e:"🥓",n:"Show Me The GoGi",d:"炭火厚切五花肉、豬頸肉，15:00–24:00",q:"쇼미더고기 해운대",tags:["必吃：厚切五花肉"]},
+ {day:1,t:"f",e:"🔥",n:"味贊王鹽烤肉 海雲台店",d:"經典厚切熟成五花肉，出發前先確認當晚營業時段",q:"味贊王鹽烤肉 해운대점 미찬왕소금구이",tags:["必吃：熟成五花"]},
+ {day:1,t:"f",e:"🐖",n:"超必殺豬肉烤肉（Chopilsal）",d:"Marine City 區，脆骨五花肉＋蜂巢烤豬皮，17:00 營業",q:"초필살 돼지구이 마린시티 해운대",tags:["必吃：蜂巢烤豬皮"]},
+ {day:1,t:"f",e:"🍲",n:"嚴湧帛豬肉湯飯 海雲台店",d:"清澈／濃郁雙湯頭選擇，營業至 23:00",q:"엄용백돼지국밥 해운대점",tags:["必吃：豬肉湯飯"]},
+ {day:1,t:"f",e:"🍜",n:"密陽血腸豬肉湯飯 海雲台店",d:"濃郁大骨湯頭，24 小時營業（晚到的宵夜好選擇）",q:"밀양순대국밥 해운대점",tags:["必吃：血腸湯飯"]},
+
+ // Day 2
+ {day:2,t:"g",e:"🛷",n:"Skyline Luge 機張滑車",d:"10:00 營業，建議早點到",q:"Skyline Luge Busan 스카이라인루지 부산"},
+ {day:2,t:"g",e:"🛍️",n:"Lotte Premium Outlets 東釜山店",d:"滑車隔壁，午餐＋逛街",q:"롯데프리미엄아울렛 동부산점"},
+ {day:2,t:"g",e:"♨️",n:"Club D Oasis",d:"海景汗蒸幕＋水上樂園，10:00 營業，週二公休",q:"Club D Oasis 해운대",tags:["放鬆療癒"]},
+ {day:2,t:"g",e:"🧖‍♀️",n:"SPA LAND Centum City",d:"新世界百貨內高級汗蒸幕，09:00 營業，全年無休",q:"Spaland Centum City 스파랜드 센텀시티"},
+ {day:2,t:"g",e:"🎄",n:"新世界百貨 Centum City ＆ 釜山電影殿堂",d:"Holiday Market、Christmas Village Busan 聖誕村 16:00–22:00",q:"Shinsegae Centum City 신세계백화점 센텀시티점"},
+ {day:2,t:"g",e:"✨",n:"海雲台光之祭典",d:"11/28 開幕，18:00–23:00 亮燈，海雲台廣場一路延伸到海灘",q:"해운대 빛축제 해운대광장"},
+ {day:2,t:"g",e:"🚁",n:"廣安里海水浴場",d:"週六 11/28 限定無人機燈光秀 19:00、21:00 兩場，建議提前 40–60 分鐘卡位",q:"Gwangalli Beach 광안리해수욕장",tags:["拍照必去"]},
+ {day:2,t:"g",e:"🎅",n:"民樂水邊公園",d:"廣安里旁，免費冬季聖誕燈飾",q:"민락수변공원"},
+ {day:2,t:"f",e:"🥩",n:"喉嚨烤肉 海雲台店（목구멍）",d:"鍋蓋鐵盤厚切五花肉＋水芹菜，16:00 營業",q:"목구멍 해운대점",tags:["必吃：鍋蓋烤肉"]},
+ {day:2,t:"f",e:"🥚",n:"伍班長烤肉",d:"烤盤旁有經典蒸蛋與泡菜，營業至凌晨 01:00",q:"오반장 해운대",tags:["必吃：蒸蛋"]},
+ {day:2,t:"f",e:"🥣",n:"水邊最高豬肉湯飯 海雲台店",d:"豬頸肉湯飯，湯頭清爽",q:"물가최고돼지국밥 해운대점",tags:["必吃：豬頸肉湯飯"]},
+
+ // Day 3
+ {day:3,t:"g",e:"🍂",n:"APEC Naru Park",d:"水營江畔散步，可碰運氣看晚黃銀杏步道（適合早上順遊）",q:"APEC Naru Park 부산 누리마루 APEC하우스"},
+ {day:3,t:"g",e:"🏬",n:"樂天百貨 釜山本店",d:"倫敦貝果所在位置，09:30 現場 CatchTable 登記候位、10:30 開門",q:"롯데백화점 부산본점"},
+ {day:3,t:"g",e:"☕",n:"田浦咖啡街",d:"特色咖啡廳、草莓甜點店、文創選物店",q:"전포카페거리",tags:["必吃：草莓甜點"]},
+ {day:3,t:"g",e:"🌸",n:"韓國小眾香水巡禮",d:"TAMBURINS、GRANHAND、NONFICTION、Scentica 等據點（西面／田浦與南浦洞皆有）",q:"탬버린즈 전포",tags:["必買：香水／護手霜"]},
+ {day:3,t:"g",e:"🎀",n:"西面一番街（Seomyeon 1-beonga）",d:"西面光之祭典聖誕燈飾、藥妝服飾逛街",q:"서면1번가"},
+ {day:3,t:"g",e:"🏨",n:"釜山大道（亞雲樹）飯店 Hotel Aventree Busan",d:"Day 3 住宿點，位於南浦洞核心區",q:"Hotel Aventree Busan"},
+ {day:3,t:"f",e:"🥯",n:"倫敦貝果博物館 釜山店",d:"樂天百貨 B1，建議先抽號碼牌或外帶",q:"런던베이글뮤지엄 롯데백화점 부산본점",tags:["必吃：貝果"]},
+ {day:3,t:"f",e:"🍲",n:"水邊最高豬肉湯飯 樂天百貨店",d:"就在樂天百貨旁，主打脆彈豬頸肉湯飯",q:"물가최고돼지국밥 롯데백화점 부산본점",tags:["必吃：豬頸肉湯飯"]},
+ {day:3,t:"f",e:"👵",n:"松亭三代湯飯",d:"西面豬肉湯飯一條街 70 年老店",q:"송정3대국밥 서면",tags:["必吃：老店湯飯"]},
+ {day:3,t:"f",e:"🌶️",n:"빨간돼지삼매경（指定辣燉豬排骨）",d:"부산 부산진구 동천로 121 1층，16:00 營業，建議 16:30–17:00 提早入場",q:"부산 부산진구 동천로 121 빨간돼지삼매경",tags:["必吃：辣燉豬排骨"]},
+
+ // Day 4
+ {day:4,t:"g",e:"🌊",n:"白淺灘文化村",d:"影島海岸步道、海景咖啡廳，從南浦洞搭公車約 15 分鐘",q:"흰여울문화마을"},
+ {day:4,t:"g",e:"🎨",n:"甘川洞文化村（備案）",d:"彩繪山城、小王子拍照點",q:"감천문화마을"},
+ {day:4,t:"g",e:"🍯",n:"富平罐頭市場＆BIFF 廣場",d:"黑糖餅、魚板、傳統水果攤買新鮮草莓",q:"부평깡통시장",tags:["必吃：黑糖餅","必買：草莓"]},
+ {day:4,t:"g",e:"👗",n:"光復路時尚街（Gwangbok-ro）",d:"逛街、草莓甜點／草莓大福",q:"광복로패션거리",tags:["必吃：草莓大福"]},
+ {day:4,t:"g",e:"🗼",n:"龍頭山公園＆釜山塔",d:"手扶梯直達，俯瞰釜山港海景",q:"용두산공원 부산타워"},
+ {day:4,t:"g",e:"🛒",n:"樂天超市 光復店",d:"11/30 週一營業 10:00–23:00，最後採買零食與打包草莓",q:"롯데마트 광복점 Lotte Mart Gwangbok",tags:["必買：零食／海苔／泡麵"]},
+ {day:4,t:"f",e:"🍜",n:"密陽血腸豬肉湯飯 富平店",d:"富平市場旁、離飯店步行 3 分鐘，24 小時營業",q:"밀양순대국밥 부평점",tags:["必吃：血腸湯飯"]},
+ {day:4,t:"f",e:"🍝",n:"永東密麵＆豬肉湯飯（釜山站對面）",d:"距南浦洞地鐵 2 站，支援多語言平板點餐",q:"영동밀면 부산역",tags:["必吃：釜山密麵"]},
+ {day:4,t:"f",e:"🥓",n:"喉嚨烤肉 南浦店（목구멍）",d:"備案：前幾天沒吃到厚切五花肉就來這",q:"목구멍 남포점",tags:["必吃：厚切五花肉"]},
+
+ // ===== be_simple_m 在地推薦（day:0 = 先放待選區；hrs=營業時間、closed=公休星期 0日~6六）=====
+ {day:2,t:"f",e:"🍗",n:"高榮雞",kr:"고영닭",d:"用橡木逼出多餘油脂，再上鐵板烤的雞肉，加起司超讚",hrs:"17:00 – 24:00",closed:[2],area:"機張",late:1,q:"고영닭 기장",tags:["必吃：起司鐵板雞"],src:"be_simple_m"},
+ {day:0,t:"f",e:"🍜",n:"八谷小麥冷麵 釜山大NC店",kr:"팔곡밀면",d:"小麥冷麵界的愛馬仕，排骨湯、韓牛湯飯也很好吃",hrs:"11:00 – 21:00",area:"釜山大 NC百貨",q:"팔곡밀면 NC백화점 부산대점",tags:["必吃：小麥冷麵"],src:"be_simple_m"},
+ {day:0,t:"f",e:"🍲",n:"上濟屋",kr:"상제옥",d:"完全沒有腥味的高級豬肉湯飯，冷切水煮肉也是一絕",hrs:"10:30 – 21:00",area:"市廳附近",q:"상제옥 부산",tags:["必吃：豬肉湯飯"],src:"be_simple_m"},
+ {day:4,t:"f",e:"🐙",n:"五鳳家 中央店",kr:"오봉집",d:"辣炒章魚、豬肉章魚炒、水煮肉、蕎麥涼麵名店",hrs:"11:00 – 21:00",closed:[0],area:"中央洞",q:"오봉집 중앙점 부산",tags:["必吃：辣炒章魚"],src:"be_simple_m"},
+ {day:2,t:"f",e:"🍱",n:"台所 本店",kr:"다이도코로",d:"日式家庭料理，每道都是頂級，唐揚炸雞、南蠻雞必點",hrs:"11:00 – 21:00",area:"廣安里",q:"다이도코로 광안리",tags:["必吃：唐揚炸雞"],src:"be_simple_m"},
+ {day:1,t:"f",e:"🥩",n:"影島烤肉店",kr:"고깃집영도",d:"比牛肉還好吃的五花肉、梅花豬，還有超強烤大腸，一個人喝酒也 OK",hrs:"11:00 – 22:00",closed:[2],area:"海雲台",q:"고깃집영도 해운대",tags:["必吃：五花肉"],src:"be_simple_m"},
+ {day:0,t:"f",e:"🍜",n:"Hibong",kr:"히봉",d:"牛筋河粉解酒第一名，手工炸春捲大推，11 年飯店資歷",hrs:"11:00 – 17:00",closed:[2],area:"海理團路",q:"히봉 해리단길",tags:["必吃：牛筋河粉"],src:"be_simple_m"},
+ {day:0,t:"f",e:"🍱",n:"Chef202",kr:"쉐프202",d:"精緻餐飲出身的主廚，做出完全不同等級的烤豬肉定食",hrs:"11:00 – 15:00",closed:[6,0],area:"水營區",q:"쉐프202 수영",tags:["必吃：烤豬肉定食"],src:"be_simple_m"},
+ {day:3,t:"f",e:"🍻",n:"Yethem",kr:"옛헴",d:"田浦洞人氣店，時髦韓式酒館。招牌「骨頭聖母峰」堆成山的骨肉、起司馬鈴薯絲煎餅、雞肉粥都好吃，一個人喝酒也 OK",hrs:"17:00 – 02:00",closed:[2],area:"田浦洞",late:1,q:"옛헴 전포",tags:["必吃：骨頭聖母峰"],src:"be_simple_m"},
+ {day:3,t:"f",e:"🥩",n:"Yetgol",kr:"옛골",d:"真正的牛胸腹肉片一點都不膩、超香",hrs:"16:00 – 06:00",area:"西面",late:1,q:"옛골 서면 소고기",tags:["必吃：牛胸腹肉片"],src:"be_simple_m"},
+ {day:0,t:"f",e:"🥩",n:"3秒沙朗烤肉",kr:"3초등심로스구이",d:"韓牛、干貝、香菇三合一！CP 值爆表的韓牛名店",hrs:"16:30 – 23:00",closed:[0],area:"蓮山洞",q:"3초등심로스구이 연산동",tags:["必吃：韓牛三合一"],src:"be_simple_m"},
+ {day:0,t:"f",e:"🐟",n:"高手半乾明太魚",kr:"고수의코다리",d:"釜山最強辣燉半乾明太魚，新推出明太魚調理包、明太魚湯",hrs:"11:00 – 21:30",area:"華明洞",q:"고수의코다리 화명동",tags:["必吃：辣燉明太魚"],src:"be_simple_m"},
+ {day:0,t:"f",e:"🍗",n:"Basak 酥脆炸雞",kr:"바삭",d:"完全不同等級的人生炸雞，名店「延豚」出身主廚",hrs:"10:00 – 20:00",closed:[1],area:"堂甘洞",q:"바삭 치킨 당감동",tags:["必吃：酥脆炸雞"],src:"be_simple_m"},
+ {day:0,t:"f",e:"🐖",n:"三味家",kr:"삼미집",d:"伊比利黑豬丁塊梅花肉，好吃到瘋掉！也是烤大腸名店",hrs:"16:00 – 01:00",area:"西面",late:1,q:"삼미집 서면",tags:["必吃：伊比利黑豬梅花肉"],src:"be_simple_m"},
+ {day:2,t:"f",e:"🍦",n:"Sydney Yogurt Lab",kr:"시드니요거랩",d:"配料隨你加的優格冰淇淋！雪梨風人生照必拍",hrs:"12:00 – 21:00",closed:[3],area:"廣安里",q:"시드니요거랩 광안리",tags:["必吃：優格冰淇淋"],src:"be_simple_m"},
+ {day:0,t:"f",e:"🥧",n:"Head Coffee",kr:"헤드커피",d:"釜山竟然有這種水準的蛋塔、費南雪專賣店？",hrs:"11:00 – 19:00",closed:[0],area:"東萊",q:"헤드커피 동래",tags:["必吃：蛋塔"],src:"be_simple_m"},
+ {day:0,t:"f",e:"🥪",n:"Beomwi",kr:"범위",d:"法式火腿早餐小圓麵包，限量早餐套餐必須排隊搶！CP 值超高的精品手沖咖啡",hrs:"08:00 – 17:00",closed:[0],area:"西洞",q:"범위 부산",tags:["必吃：法式火腿小圓麵包"],src:"be_simple_m"},
+
+ // ===== Scentica 釜山兩間門市（各有自己的在地限定香水）=====
+ {day:2,t:"g",e:"🧴",n:"Scentica 廣安店",kr:"센티카 광안",d:"廣安限定香水「AVENQUA 25」，以廣安海灘為主題：柑橘果香＋清爽海風的海洋麝香調。地鐵 2 號線廣安站 3 號出口步行約 4 分鐘，可現場試香",hrs:"11:00 – 21:00",area:"廣安里",q:"센티카 광안 부산 수영구 광안로 25",tags:["必買：廣安限定香水 AVENQUA 25"]},
+ {day:3,t:"g",e:"🧴",n:"Scentica 前浦店",kr:"센티카 전포",d:"前浦限定香水「BRUTEA 12」，以田浦咖啡街為主題：濃郁咖啡香＋東加豆的溫暖香氣。地鐵 2 號線田浦站 7 號出口步行約 1–2 分鐘",hrs:"11:00 – 21:00",area:"田浦",q:"센티카 전포 부산 부산진구 전포대로199번길 12",tags:["必買：前浦限定香水 BRUTEA 12"]},
+];
+const byName = Object.fromEntries(items.map(i=>[i.n,i]));
+const nameIdx = Object.fromEntries(items.map((i,k)=>[i.n,k]));
+const BACKUP = new Set(["甘川洞文化村（備案）","喉嚨烤肉 南浦店（목구멍）"]);
+// 每天對應星期（11/27 五、11/28 六、11/29 日、11/30 一），用來偵測「排到公休日」
+const DAYDOW = {1:5,2:6,3:0,4:1};
+const DOW = ["日","一","二","三","四","五","六"];
+// 為原本的店家補上地區標示
+const AREA = {
+ "海雲台": ["海雲台華美達安可酒店","海雲台主街＆海水浴場","海雲台傳統市場","Show Me The GoGi","味贊王鹽烤肉 海雲台店","密陽血腸豬肉湯飯 海雲台店","嚴湧帛豬肉湯飯 海雲台店","喉嚨烤肉 海雲台店（목구멍）","伍班長烤肉","水邊最高豬肉湯飯 海雲台店","Club D Oasis","海雲台光之祭典"],
+ "Centum City": ["SPA LAND Centum City","新世界百貨 Centum City ＆ 釜山電影殿堂"],
+ "Marine City": ["超必殺豬肉烤肉（Chopilsal）"],
+ "機張": ["Skyline Luge 機張滑車","Lotte Premium Outlets 東釜山店"],
+ "廣安里": ["廣安里海水浴場","民樂水邊公園"],
+ "水營江": ["APEC Naru Park"],
+ "西面": ["樂天百貨 釜山本店","倫敦貝果博物館 釜山店","水邊最高豬肉湯飯 樂天百貨店","西面一番街（Seomyeon 1-beonga）","松亭三代湯飯","빨간돼지삼매경（指定辣燉豬排骨）"],
+ "田浦": ["田浦咖啡街","韓國小眾香水巡禮"],
+ "南浦洞": ["釜山大道（亞雲樹）飯店 Hotel Aventree Busan","富平罐頭市場＆BIFF 廣場","光復路時尚街（Gwangbok-ro）","龍頭山公園＆釜山塔","樂天超市 光復店","密陽血腸豬肉湯飯 富平店","喉嚨烤肉 南浦店（목구멍）"],
+ "影島": ["白淺灘文化村"],
+ "甘川洞": ["甘川洞文化村（備案）"],
+ "釜山站": ["永東密麵＆豬肉湯飯（釜山站對面）"],
+};
+Object.entries(AREA).forEach(([a,names])=>names.forEach(n=>{ if(byName[n] && !byName[n].area) byName[n].area = a; }));
+byName["Club D Oasis"].closed = [2];
+// 紅眼班機 Day 1 一早抵達：放完行李直接去汗蒸幕（二選一）
+byName["SPA LAND Centum City"].day = 1;
+byName["Club D Oasis"].day = 1;
+
+const extra = {
+ oy:{e:"💄",n:"Olive Young（橄欖影子）",d:"海雲台主街就有，西面、光復路也好逛。面膜、護手霜、護唇膏、防曬、小禮物一次買齊",q:"Olive Young 해운대",day:"各區隨處可逛"},
+ tam:{e:"🧴",n:"TAMBURINS",d:"護手霜、香水，質感包裝很適合送禮",q:"탬버린즈 전포",day:"田浦／西面"},
+ gra:{e:"🌿",n:"GRANHAND",d:"香氛、護手霜，小眾選物",q:"그랑핸드 전포",day:"田浦／西面"},
+ non:{e:"💐",n:"NONFICTION",d:"香氛、身體保養，氣味溫柔",q:"논픽션 전포",day:"田浦／西面"},
+};
+
+const days = {
+ 1:{title:"Day 1 · 11/27(五)",color:"var(--sky)",
+    flow:["辦理入住、放行李（住宿在海雲台站旁）","海雲台海水浴場散步＋主街逛街","傳統市場吃小吃、買草莓","晚餐厚切烤肉或豬肉湯飯"],
+    tip:"抵達時間不同，累了就直接吃飯休息～"},
+ 2:{title:"Day 2 · 11/28(六)",color:"var(--lav)",
+    flow:["上午二選一：機張滑車＋Outlet（10:00 營業）／汗蒸幕放鬆","下午新世界 Centum City 聖誕村（16:00 開始）","18:00 起海雲台光之祭典亮燈","晚上廣安里無人機燈光秀（19:00、21:00 兩場）"],
+    tip:"無人機秀建議提前 40–60 分鐘卡位；Club D Oasis 週二公休。"},
+ 3:{title:"Day 3 · 11/29(日)",color:"var(--yellow)",
+    flow:["早上順遊 APEC Naru Park，09:30 到樂天百貨登記倫敦貝果","田浦咖啡街、小眾香水、草莓甜點","西面一番街逛街","16:30–17:00 提早入場吃辣燉豬排骨","晚上移動到南浦洞，入住 Hotel Aventree"],
+    tip:"倫敦貝果 09:30 現場用 CatchTable 登記候位，10:30 百貨開門。"},
+ 4:{title:"Day 4 · 11/30(一)",color:"var(--mint)",
+    flow:["白淺灘文化村海岸步道（備案：甘川洞）","富平市場＆BIFF 廣場吃黑糖餅","光復路逛街、草莓大福","龍頭山公園＆釜山塔","樂天超市最後採買，打包草莓","18:30 從飯店出發前往機場（21:50 班機）"],
+    tip:"樂天超市光復店 11/30 營業 10:00–23:00。草莓與零食最後再買比較好帶。"},
+};
+const KEYS = ["pool",1,2,3,4];
+
+// 每天最上面的「大概行程推薦」
+const INTRO = {
+ 1:"紅眼班機一早抵達，三個人一起行動：先到海雲台飯店放行李，接著直接去汗蒸幕洗去一夜的疲憊——SPA LAND Centum City（09:00 開、全年無休）或 Club D Oasis（10:00 開，海景汗蒸幕＋水上樂園）二選一。休息夠了再沿海水浴場散步、逛海雲台主街和 Olive Young，到傳統市場買魚板、糖餅和草莓當點心。晚餐吃一頓厚切烤肉或豬肉湯飯（影島烤肉店週二公休，今天剛好可以去），早點回飯店休息，養足體力明天繼續。",
+ 2:"今天是整趟的聖誕燈海重頭戲：上午去機張玩滑車＋逛 Outlet（10:00 營業，建議早點到），午餐在 Outlet 解決；下午回 Centum City 逛新世界聖誕村（16:00 開始）。傍晚轉到廣安里，先到 Scentica 廣安店試香、買廣安限定款（營業到 21:00），再吃台所或其他晚餐；19:00 或 21:00 場無人機燈光秀建議提前 40–60 分鐘卡位。海雲台光之祭典 18:00–23:00 亮燈，看完秀回海雲台逛也來得及。",
+ 3:"今天主打西面＆田浦，傍晚移動到南浦洞：09:30 先到樂天百貨登記倫敦貝果，候位空檔逛西面一番街；下午到田浦咖啡街喝咖啡、吃草莓甜點，順路逛小眾香水，到 Scentica 前浦店試香、買前浦限定款（田浦站 7 號出口步行 1–2 分鐘）。16:30–17:00 提早去吃辣燉豬排骨，晚上 Yethem、Yetgol 也在這一區，最後搭車到南浦洞入住 Hotel Aventree。APEC Naru Park 在水營江畔較偏，有空再排進來就好。",
+ 4:"今天慢慢逛、回程前採買：上午到影島白淺灘文化村走海岸步道、喝海景咖啡（備案：甘川洞文化村）；接著回南浦洞逛富平罐頭市場＆BIFF 廣場吃黑糖餅，光復路逛街、吃草莓大福，再搭手扶梯上龍頭山公園看港景。最後到樂天超市光復店掃零食、打包草莓，18:30 從飯店出發前往機場（21:50 班機）。今天是週一：五鳳家可以吃，Basak 酥脆炸雞公休。",
+};
+
+const eatGroups = [
+ {t:"🥓 厚切烤肉・燒肉",names:["Show Me The GoGi","味贊王鹽烤肉 海雲台店","超必殺豬肉烤肉（Chopilsal）","喉嚨烤肉 海雲台店（목구멍）","伍班長烤肉","喉嚨烤肉 南浦店（목구멍）","影島烤肉店","3秒沙朗烤肉","三味家","Yetgol","Chef202"]},
+ {t:"🍲 豬肉湯飯",names:["嚴湧帛豬肉湯飯 海雲台店","密陽血腸豬肉湯飯 海雲台店","水邊最高豬肉湯飯 海雲台店","水邊最高豬肉湯飯 樂天百貨店","松亭三代湯飯","密陽血腸豬肉湯飯 富平店","上濟屋"]},
+ {t:"🌶️ 其他在地主食",names:["빨간돼지삼매경（指定辣燉豬排骨）","永東密麵＆豬肉湯飯（釜山站對面）","八谷小麥冷麵 釜山大NC店","五鳳家 中央店","台所 本店","Hibong","高手半乾明太魚"]},
+ {t:"🍗 炸雞・小酌",names:["高榮雞","Basak 酥脆炸雞","Yethem"]},
+ {t:"🥯 貝果・咖啡・甜點・小吃",names:["倫敦貝果博物館 釜山店","田浦咖啡街","海雲台傳統市場","富平罐頭市場＆BIFF 廣場","光復路時尚街（Gwangbok-ro）","Sydney Yogurt Lab","Head Coffee","Beomwi"]},
+];
+const eatTop = [
+ ["🥓","厚切五花肉","海雲台烤肉店先吃起來，南浦有備案"],
+ ["🍲","豬肉湯飯","釜山靈魂料理，各區都有"],
+ ["🍜","密陽血腸湯飯","24 小時營業，行程空檔的救星"],
+ ["🥯","倫敦貝果","樂天百貨 B1，記得 09:30 先登記"],
+ ["🌶️","辣燉豬排骨","傍晚提早入場"],
+ ["🍯","黑糖餅","富平市場邊逛邊吃"],
+ ["🍓","冬季草莓＋草莓甜點","市場買、田浦吃、光復路吃草莓大福"],
+ ["🍥","釜山魚板","傳統市場現做熱熱吃"],
+];
+const buyGroups = [
+ {t:"💄 美妝保養",refs:[extra.oy]},
+ {t:"🌸 香水・香氛・選物",refs:[byName["韓國小眾香水巡禮"],byName["Scentica 廣安店"],byName["Scentica 前浦店"],extra.tam,extra.gra,extra.non,byName["田浦咖啡街"]]},
+ {t:"🍓 水果・市場",refs:[byName["海雲台傳統市場"],byName["富平罐頭市場＆BIFF 廣場"]]},
+ {t:"🍘 零食・伴手禮",refs:[byName["樂天超市 光復店"]]},
+ {t:"🛍️ 逛街血拼",refs:[byName["Lotte Premium Outlets 東釜山店"],byName["新世界百貨 Centum City ＆ 釜山電影殿堂"],byName["西面一番街（Seomyeon 1-beonga）"],byName["光復路時尚街（Gwangbok-ro）"]]},
+];
+const buyTop = [
+ ["💄","Olive Young","面膜、護手霜、護唇膏、防曬、小禮物"],
+ ["🌸","小眾香水／護手霜","TAMBURINS、GRANHAND、NONFICTION"],
+ ["🧴","Scentica 在地限定香水","廣安店限定 AVENQUA 25（Day 2）、前浦店限定 BRUTEA 12（Day 3）"],
+ ["🍓","新鮮草莓","市場買一點，回程前再補最新鮮"],
+ ["🍘","零食・海苔・泡麵","樂天超市光復店掃貨"],
+];
+
+/* ========== 狀態：行程排列 ========== */
+function defaultPlan(){
+  const p={pool:[],1:[],2:[],3:[],4:[]};
+  items.forEach((it,i)=>{ if(BACKUP.has(it.n) || !it.day) p.pool.push(i); else p[it.day].push(i); });
+  // Day 1 順序：飯店放行李 → 汗蒸幕，其餘照原順序
+  const first = ["海雲台華美達安可酒店","SPA LAND Centum City","Club D Oasis"].map(n=>nameIdx[n]);
+  p[1] = first.concat(p[1].filter(i=>!first.includes(i)));
+  return p;
+}
+function ser(p){ return KEYS.map(k=>p[k].join(".")).join("_"); }
+function parse(s){
+  try{
+    const parts = s.split("_"); if(parts.length!==5) return null;
+    const p={}, seen=new Set();
+    KEYS.forEach((k,j)=>{
+      p[k] = parts[j]===""?[]:parts[j].split(".").map(Number);
+      p[k].forEach(i=>{ if(!Number.isInteger(i)||i<0||i>=items.length||seen.has(i)) throw 0; seen.add(i); });
+    });
+    items.forEach((_,i)=>{ if(!seen.has(i)) p.pool.push(i); });
+    return p;
+  }catch(e){ return null; }
+}
+let plan = null;
+try{
+  const m = location.hash.match(/#p=([\d._]*)/);
+  if(m) plan = parse(m[1]);
+  if(!plan){ const s = localStorage.getItem("busan-plan"); if(s) plan = parse(s); }
+}catch(e){}
+if(!plan) plan = defaultPlan();
+
+let store = {};
+try{ store = JSON.parse(localStorage.getItem("busan-done")||"{}"); }catch(e){}
+function saveStore(){ try{ localStorage.setItem("busan-done", JSON.stringify(store)); }catch(e){} }
+function savePlan(){ try{ localStorage.setItem("busan-plan", ser(plan)); }catch(e){} }
+
+function labelOf(name){
+  const i = nameIdx[name];
+  for(const k of KEYS) if(plan[k].includes(i)) return k==="pool" ? "待選區" : "Day "+k;
+  return "";
+}
+
+/* ========== 卡片 ========== */
+function closedText(it){ return (it.closed && it.closed.length) ? "公休 週"+it.closed.map(n=>DOW[n]).join("・") : ""; }
+function conflictOf(it){   // 目前排的那天剛好是公休日？
+  if(!it.closed) return false;
+  const i = nameIdx[it.n]; if(i===undefined) return false;
+  for(const d of [1,2,3,4]) if(plan[d].includes(i)) return it.closed.includes(DAYDOW[d]);
+  return false;
+}
+function card(it, label, num){
+  const tags = (it.tags||[]).map(t=>`<span class="tag ${t.startsWith("必吃")?"eat":t.startsWith("必買")?"buy":""}">${t}</span>`).join("");
+  const dl = label ? `<span class="tag day">${label}</span>` : "";
+  const src = it.src ? `<span class="tag src">👍 ${it.src} 推薦</span>` : "";
+  const warn = conflictOf(it), ct = closedText(it);
+  const meta = (it.hrs||ct||it.area) ? `<div class="meta">${it.hrs?`<span>${it.hrs}</span>`:""}${ct?`<span class="closed${warn?" warn":""}">${ct}</span>`:""}${warn?`<span class="closed warn">⚠️ 排到公休日了</span>`:""}${it.area?`<span class="area">◆ ${it.area}</span>`:""}</div>` : "";
+  const thumb = `<div class="thumb">${num?`<span class="no">${String(num).padStart(2,"0")}</span>`:""}${it.img?`<img src="${it.img}" alt="" loading="lazy" onerror="this.remove()">`:""}${it.e}</div>`;
+  return `<div class="card ${store[it.n]?"done":""}" data-id="${it.n}">
+    ${thumb}
+    <div class="body">
+      <div class="name">${it.n}${it.kr?`<span class="kr">${it.kr}</span>`:""}</div>
+      <div class="desc">${it.d}</div>
+      ${meta}
+      ${(dl||src||tags)?`<div class="tags">${dl}${src}${tags}</div>`:""}
+      <div class="actions">
+        <a class="map" href="${gm(it.q)}" target="_blank" rel="noopener">📍 Google 地圖</a>
+        <label class="chk"><input type="checkbox" ${store[it.n]?"checked":""}> 去過了</label>
+      </div>
+    </div></div>`;
+}
+const cards = html => `<div class="cards">${html}</div>`;
+function topBox(title, arr){
+  return `<div class="top"><h2>${title}</h2><ul>${arr.map(x=>`<li>${x[0]} <b>${x[1]}</b><br><small>${x[2]}</small></li>`).join("")}</ul></div>`;
+}
+
+/* ========== 各頁 ========== */
+function dayPage(d){
+  const D = days[d];
+  const list = plan[d].map(i=>items[i]);
+  return `<div class="dayhead" style="background:${D.color}"><h2>${D.title}</h2><p>共 ${list.length} 個行程（到「🧩 排行程」調整順序）</p></div><div class="intro"><b>🗺️ 今日推薦玩法</b><p>${INTRO[d]}</p></div>`
+   + (list.length ? cards(list.map((it,k)=>card(it, it.t==="f"?"🍴 美食":"📍 景點", k+1)).join(""))
+                  : `<div class="empty">這天還沒有行程，到「🧩 排行程」把店家拖進來吧 ✨</div>`);
+}
+function eatPage(){
+  return `<div class="dayhead" style="background:var(--peach)"><h2>😋 必吃美食總整理</h2><p>依種類分類，並顯示目前排在哪一天</p></div>`
+   + topBox("🌟 一定要吃的 8 樣", eatTop)
+   + eatGroups.map(g=>`<div class="sub">${g.t}</div>`+cards(g.names.map((n,k)=>card(byName[n], labelOf(n), k+1)).join(""))).join("");
+}
+function buyPage(){
+  return `<div class="dayhead" style="background:var(--lav)"><h2>🛍️ 必買清單總整理</h2><p>依品項分類，並顯示目前排在哪一天</p></div>`
+   + topBox("🌟 必買重點", buyTop)
+   + `<div class="tip">💡 草莓與零食建議留到最後一天再買，行李比較好整理。</div>`
+   + buyGroups.map(g=>`<div class="sub">${g.t}</div>`+cards(g.refs.map((r,k)=>card(r, typeof r.day==="string" ? r.day : labelOf(r.n), k+1)).join(""))).join("");
+}
+function renderViews(){
+  [1,2,3,4].forEach(d=>{ document.getElementById("p-d"+d).innerHTML = dayPage(d); });
+  document.getElementById("p-eat").innerHTML = eatPage();
+  document.getElementById("p-buy").innerHTML = buyPage();
+  renderSearch();
+}
+
+/* ========== 排行程頁 ========== */
+const colTitle = k => k==="pool" ? "📥 待選區（還沒決定的先放這）" : days[k].title;
+function planItem(i, cur){
+  const it = items[i];
+  const opts = KEYS.map(k=>`<option value="${k}" ${String(k)===String(cur)?"selected":""}>${k==="pool"?"待選區":"Day "+k}</option>`).join("");
+  return `<div class="pi" data-i="${i}"><span class="handle" title="按住拖曳">☰</span><span class="pe">${it.e}</span><span class="pn">${it.n}${it.t==="f"?" 🍴":""}${(it.closed && it.closed.includes(DAYDOW[Number(cur)]))?" <b style='color:#c8102e'>⚠️該日公休</b>":""}</span><select class="mv" aria-label="移到">${opts}</select></div>`;
+}
+function buildPlannerShell(){
+  document.getElementById("p-plan").innerHTML =
+   `<div class="dayhead" style="background:var(--pink-soft)"><h2>🧩 排行程</h2><p>按住 ☰ 拖曳，或用右邊「移到」選單換天；🍴 代表餐廳</p></div>
+    <div class="toolbar">
+      <button class="btn" id="share">🔗 複製分享連結</button>
+      <button class="btn alt" id="reset">↩️ 還原預設</button>
+    </div>`
+   + KEYS.map(k=>`<div class="col"><div class="colhead"><span>${colTitle(k)}</span><span class="cnt" data-c="${k}"></span></div><div class="list" data-k="${k}"></div></div>`).join("");
+}
+function fillPlanner(){
+  document.querySelectorAll("#p-plan .list").forEach(l=>{
+    const k = l.dataset.k;
+    l.innerHTML = plan[k].map(i=>planItem(i,k)).join("");
+  });
+  updateCounts();
+}
+function updateCounts(){
+  document.querySelectorAll("#p-plan .cnt").forEach(c=>{ c.textContent = plan[c.dataset.c].length + " 項"; });
+}
+function readPlanFromDOM(){
+  KEYS.forEach(k=>{
+    const l = document.querySelector(`#p-plan .list[data-k="${k}"]`);
+    plan[k] = [...l.children].map(c=>+c.dataset.i);
+    [...l.children].forEach(c=>{ c.querySelector("select").value = String(k); });
+  });
+  savePlan(); updateCounts(); renderViews(); setTimeout(fillPlanner,0);
+}
+
+/* ========== 搜尋＋標籤 ========== */
+const TAGDEFS = [
+ {k:"烤肉",em:"🥓",re:/烤肉|五花|GoGi|Chopilsal|烤大腸|梅花|牛胸|烤豬/i},
+ {k:"豬肉湯飯",em:"🍲",re:/湯飯/},
+ {k:"麵食",em:"🍜",re:/密麵|冷麵|河粉/},
+ {k:"炸雞",em:"🍗",re:/炸雞/},
+ {k:"海鮮",em:"🦑",re:/章魚|明太魚/},
+ {k:"小酌",em:"🍻",re:/酒館|喝酒|烤大腸/},
+ {k:"咖啡甜點",em:"🥯",re:/咖啡|Coffee|甜點|貝果|大福|糖餅|蛋塔|費南雪|優格|冰淇淋|麵包/i},
+ {k:"草莓",em:"🍓",re:/草莓/},
+ {k:"市場小吃",em:"🍢",re:/市場|魚板|糖餅|BIFF/},
+ {k:"購物",em:"🛍️",re:/逛街|Outlet|百貨|超市|Olive|香水|選物|必買|護手霜/,g:1},
+ {k:"美妝香水",em:"💄",re:/Olive|香水|護手霜|TAMBURINS|GRANHAND|NONFICTION|保養/,g:1},
+ {k:"汗蒸幕",em:"♨️",re:/汗蒸|SPA LAND|Club D/},
+ {k:"燈飾夜景",em:"✨",re:/燈|光之祭典|聖誕/},
+ {k:"海景散步",em:"🌊",re:/海邊|海水浴場|海景|海岸|公園|步道|銀杏|釜山塔|文化村/,g:1},
+ {k:"體驗活動",em:"🛷",re:/滑車|Luge|水上樂園/},
+ {k:"住宿",em:"🏨",re:/住宿/},
+];
+const TAGLIST = [["美食","🍴"],["景點","📍"],["必吃","😋"],["必買","🎁"]].concat(TAGDEFS.map(d=>[d.k,d.em])).concat([["宵夜","🌙"],["在地推薦","👍"]]);
+const DAYTAGS = ["Day 1","Day 2","Day 3","Day 4","待選區"];
+const entries = items.concat(Object.values(extra));
+function computeTags(it){
+  const g = it.t!=="f";
+  const s = it.n+" "+it.d+" "+(it.tags||[]).join(" ");
+  const out = [];
+  TAGDEFS.forEach(d=>{ if(d.g && !g) return; if(d.re.test(s)) out.push(d.k); });
+  if(typeof it.day==="number") out.push(g?"景點":"美食");
+  if((it.tags||[]).some(t=>t.startsWith("必吃"))) out.push("必吃");
+  if((it.tags||[]).some(t=>t.startsWith("必買")) || typeof it.day==="string") out.push("必買");
+  if(/24 小時|凌晨/.test(s) || it.late) out.push("宵夜");
+  if(it.src) out.push("在地推薦");
+  return out;
+}
+entries.forEach(it=>{ it._tags = computeTags(it); });
+function labelFor(it){ return typeof it.day==="string" ? it.day : labelOf(it.n); }
+function tagsOf(it){
+  const t = it._tags.slice();
+  if(typeof it.day==="number"){ const l = labelOf(it.n); if(l) t.push(l); }
+  return t;
+}
+let sel = new Set(), anyMode = true, qtext = "";
+function matchEntry(it){
+  const tg = tagsOf(it);
+  if(sel.size){
+    const arr = [...sel];
+    const ok = anyMode ? arr.some(x=>tg.includes(x)) : arr.every(x=>tg.includes(x));
+    if(!ok) return false;
+  }
+  if(qtext){
+    const hay = (it.n+" "+(it.kr||"")+" "+(it.area||"")+" "+it.d+" "+(it.tags||[]).join(" ")+" "+it.q+" "+tg.join(" ")).toLowerCase();
+    return qtext.split(/\s+/).every(w=>hay.includes(w));
+  }
+  return true;
+}
+function buildSearchShell(){
+  document.getElementById("p-search").innerHTML =
+   `<div class="sbox"><input id="q" type="search" placeholder="🔍 搜尋店名、餐點、地區…（例：烤肉、豬肉湯、購物）" autocomplete="off"></div><div id="srch-chips"></div><div id="srch-res"></div>`;
+}
+function renderSearch(){
+  const chipsEl = document.getElementById("srch-chips"), resEl = document.getElementById("srch-res");
+  if(!chipsEl || !resEl) return;
+  const cnt = k => entries.filter(it=>tagsOf(it).includes(k)).length;
+  const mk = (k,em) => {
+    const n = cnt(k);
+    if(!n && !sel.has(k)) return "";
+    return `<button class="chipt ${sel.has(k)?"on":""}" data-tag="${k}">${em?em+" ":""}${k}<small>${n}</small></button>`;
+  };
+  chipsEl.innerHTML =
+    `<div class="chiplabel">🏷️ 點標籤篩選（可多選）</div><div class="chips">${TAGLIST.map(x=>mk(x[0],x[1])).join("")}</div>`
+   +`<div class="chiplabel">📅 依目前行程天數</div><div class="chips">${DAYTAGS.map(k=>mk(k,"")).join("")}</div>`;
+  const list = entries.filter(matchEntry);
+  resEl.innerHTML =
+    `<div class="rescount"><span>找到 <b>${list.length}</b> 個</span>`
+   +(sel.size>1 ? `<button class="btn alt sm" id="anyToggle">${anyMode?"符合任一標籤":"同時符合全部"}（點我切換）</button>` : "")
+   +((sel.size||qtext) ? `<button class="btn alt sm" id="clearSel">清除篩選</button>` : "")
+   +`</div>`
+   +(list.length ? cards(list.map((it,k)=>card(it, labelFor(it), k+1)).join("")) : `<div class="empty">找不到符合的店家，換個關鍵字或標籤試試 🔎</div>`);
+}
+
+/* ========== 組版 ========== */
+const tabs = [["search","🔍 搜尋"],["plan","🧩 排行程"],["d1","🌊 Day 1"],["d2","🎄 Day 2"],["d3","🥯 Day 3"],["d4","⚓ Day 4"],["sep",""],["eat","😋 必吃"],["buy","🛍️ 必買"]];
+document.getElementById("nav").innerHTML = tabs.map((t,i)=> t[0]==="sep" ? `<span class="sep"></span>` : `<button data-t="${t[0]}" class="${i?"":"on"}">${t[1]}</button>`).join("");
+document.getElementById("app").innerHTML = tabs.filter(t=>t[0]!=="sep").map((t,i)=>`<section class="page ${i?"":"on"}" id="p-${t[0]}"></section>`).join("");
+buildPlannerShell(); buildSearchShell(); fillPlanner(); renderViews();
+
+if(window.Sortable){
+  document.querySelectorAll("#p-plan .list").forEach(l=>{
+    Sortable.create(l,{group:"plan",handle:".handle",animation:150,ghostClass:"sortable-ghost",chosenClass:"sortable-chosen",
+      forceFallback:false,scroll:true,scrollSensitivity:70,onEnd:readPlanFromDOM});
+  });
+}
+
+function show(t){
+  document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on", b.dataset.t===t));
+  document.querySelectorAll(".page").forEach(p=>p.classList.toggle("on", p.id==="p-"+t));
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+document.getElementById("nav").addEventListener("click",e=>{
+  const b = e.target.closest("button"); if(b) show(b.dataset.t);
+});
+
+const app = document.getElementById("app");
+app.addEventListener("change",e=>{
+  const el = e.target;
+  if(el.classList.contains("mv")){            // 用選單換天
+    const pi = el.closest(".pi");
+    document.querySelector(`#p-plan .list[data-k="${el.value}"]`).appendChild(pi);
+    readPlanFromDOM();
+    return;
+  }
+  if(el.type==="checkbox"){                   // 去過了
+    const id = el.closest(".card").dataset.id, on = el.checked;
+    if(on) store[id]=1; else delete store[id];
+    saveStore();
+    document.querySelectorAll(".card").forEach(c=>{
+      if(c.dataset.id===id){ c.classList.toggle("done",on); c.querySelector("input").checked=on; }
+    });
+  }
+});
+app.addEventListener("click",e=>{
+  if(e.target.id==="share"){
+    const url = location.href.split("#")[0] + "#p=" + ser(plan);
+    const ok = () => { e.target.textContent="✅ 已複製！貼給姐妹們"; setTimeout(()=>e.target.textContent="🔗 複製分享連結",2500); };
+    if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(url).then(ok,()=>prompt("複製這個連結：",url)); }
+    else prompt("複製這個連結：",url);
+  }
+  if(e.target.id==="reset"){
+    if(confirm("要把行程還原成預設排法嗎？")){ plan = defaultPlan(); savePlan(); fillPlanner(); renderViews(); }
+  }
+});
+
+/* 搜尋與標籤操作 */
+app.addEventListener("input",e=>{
+  if(e.target.id==="q"){ qtext = e.target.value.trim().toLowerCase(); renderSearch(); }
+});
+app.addEventListener("click",e=>{
+  const ch = e.target.closest(".chipt");
+  if(ch){ const k = ch.dataset.tag; if(sel.has(k)) sel.delete(k); else sel.add(k); renderSearch(); return; }
+  if(e.target.id==="anyToggle"){ anyMode = !anyMode; renderSearch(); }
+  if(e.target.id==="clearSel"){
+    sel.clear(); qtext = "";
+    const q = document.getElementById("q"); if(q) q.value = "";
+    renderSearch();
+  }
+});
+
+/* ========== 聖誕裝飾：燈串＋飄雪 ========== */
+(function(){
+  const ul = document.getElementById("lights");
+  if(ul){
+    const n = Math.ceil(innerWidth/34)+1;
+    for(let i=0;i<n;i++){ const li=document.createElement("li"); li.style.animationDelay=(i%5*0.4)+"s"; ul.appendChild(li); }
+  }
+  const c = document.getElementById("snow");
+  if(!c) return;
+  const ctx = c.getContext("2d");
+  const reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let W=0, H=0, flakes=[];
+  function size(){
+    const r = window.devicePixelRatio||1;
+    W = innerWidth; H = innerHeight;
+    c.width = W*r; c.height = H*r;
+    ctx.setTransform(r,0,0,r,0,0);
+  }
+  size();
+  addEventListener("resize", size);
+  const N = W<600 ? 45 : 85;
+  for(let i=0;i<N;i++){
+    flakes.push({x:Math.random()*W, y:Math.random()*H, r:1+Math.random()*3, s:0.4+Math.random()*1.2, d:Math.random()*6.28});
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle = "rgba(255,255,255,0.85)";
+    for(const f of flakes){
+      if(!reduce){
+        f.y += f.s; f.d += 0.01; f.x += Math.sin(f.d)*0.5;
+        if(f.y > H+5){ f.y = -5; f.x = Math.random()*W; }
+      }
+      ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, 6.2832); ctx.fill();
+    }
+    if(!reduce) requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script>
+</body>
+</html>
